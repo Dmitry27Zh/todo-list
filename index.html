@@ -13,6 +13,7 @@
     />
     <link rel="stylesheet" href="./css/styles.css" />
     <script src="https://kit.fontawesome.com/a7ca5e41fd.js" crossorigin="anonymous"></script>
+    <script src="./js/index.js" type="module"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -34,21 +35,7 @@
             </div>
             <fieldset>
               <legend class="visually-hidden">Task list</legend>
-              <ul class="todo__list">
-                <li class="todo__task">
-                  <h3 class="todo__task-title">New Task</h3>
-                  <label class="todo__btn todo__task-status">
-                    <span class="visually-hidden">Mark status</span>
-                    <input class="todo__task-input visually-hidden" type="checkbox" name="New Task status" />
-                    <span class="todo__task-icon todo__task-done"><i class="fa-solid fa-check"></i></span>
-                    <span class="todo__task-icon todo__task-undone">–</span>
-                  </label>
-                  <button class="todo__btn todo__task-delete" type="button">
-                    <span class="visually-hidden">Delete task</span>
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </li>
-              </ul>
+              <ul class="todo__list"></ul>
             </fieldset>
           </form>
         </section>
