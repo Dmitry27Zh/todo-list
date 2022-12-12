@@ -1,8 +1,8 @@
 @import './modules/todo.css';
 
 *,
-*:: before,
-*:: after {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -27,6 +27,19 @@ body {
 
 .container {
   margin: 0 auto;
-  padding: 0 20px;
-  max-width: 1400px;
+  padding: 0 min(20px, 4vw);
+  width: clamp(100%, 100%, 1400px);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
 }

@@ -1,4 +1,52 @@
 .todo {
   margin: 0 auto;
+  padding: 0 1em;
+  width: min(40em, 100%);
+  font-size: min(3vw, 20px);
   color: #ffffff;
+}
+
+.todo__header {
+  margin: 0 0 3em;
+}
+
+.todo__title {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.todo__new {
+  display: flex;
+  background: #ffffff;
+}
+
+.todo__new-container {
+  flex: 1 1 10em;
+  display: flex;
+}
+
+.todo__new-input {
+  flex-grow: 1;
+  padding: 0.25em 0.5em;
+  background: transparent;
+  border: none;
+}
+
+.todo__submit {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25em;
+  color: #d88771;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, background 0.3s ease;
+}
+
+.todo__submit:hover,
+.todo__submit:focus-visible {
+  color: #ffffff;
+  background-color: #d88771;
 }
