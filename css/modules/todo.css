@@ -2,7 +2,7 @@
   margin: 0 auto;
   padding: 0 1em;
   width: min(40em, 100%);
-  font-size: min(3vw, 20px);
+  font-size: min(6vw, 20px);
   color: #ffffff;
 }
 
@@ -28,16 +28,24 @@
 .todo__new-input {
   flex-grow: 1;
   padding: 0.25em 0.5em;
+  font-size: 1em;
   background: transparent;
   border: none;
 }
 
-.todo__submit {
+.todo__new-input:focus {
+  outline: none;
+}
+
+.todo__btn {
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 2em;
+  height: 2em;
   padding: 0.25em;
+  font-size: 1em;
   color: #d88771;
   background: transparent;
   border: none;
@@ -45,8 +53,59 @@
   transition: color 0.3s ease, background 0.3s ease;
 }
 
-.todo__submit:hover,
-.todo__submit:focus-visible {
+.todo__btn:hover,
+.todo__btn:focus-visible {
   color: #ffffff;
   background-color: #d88771;
+}
+
+.todo__form fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.todo__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  list-style: none;
+  margin: 0;
+  padding: 1.5em 0;
+}
+
+.todo__task {
+  display: flex;
+  align-items: center;
+  color: #111111;
+  background: #ffffff;
+}
+
+.todo__task-title {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0.5em 1em;
+  font-size: 0.8em;
+}
+
+.todo__task-status {
+  position: relative;
+}
+
+.todo__task-icon {
+  position: absolute;
+  margin: auto;
+  transition: opacity 0.3s ease;
+}
+
+.todo__task-done {
+  opacity: 0;
+}
+
+.todo__task-input:checked ~ .todo__task-done {
+  opacity: 1;
+}
+
+.todo__task-input:checked ~ .todo__task-undone {
+  opacity: 0;
 }

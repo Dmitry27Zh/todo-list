@@ -21,13 +21,13 @@
           <header class="todo__header">
             <h2 class="todo__title">ToDo List</h2>
           </header>
-          <form action="#">
+          <form class="todo__form" action="#" method="post">
             <div class="todo__new">
               <label class="todo__new-container">
                 <span class="visually-hidden">Write task name</span>
                 <input class="todo__new-input" type="text" name="new" placeholder="New Task..." />
               </label>
-              <button class="todo__submit" type="submit">
+              <button class="todo__btn todo__submit" type="submit">
                 <span class="visually-hidden">Add new task</span>
                 <i class="fa-solid fa-square-plus"></i>
               </button>
@@ -35,7 +35,19 @@
             <fieldset>
               <legend class="visually-hidden">Task list</legend>
               <ul class="todo__list">
-                <li class="todo__task"></li>
+                <li class="todo__task">
+                  <h3 class="todo__task-title">New Task</h3>
+                  <label class="todo__btn todo__task-status">
+                    <span class="visually-hidden">Mark status</span>
+                    <input class="todo__task-input visually-hidden" type="checkbox" name="New Task status" />
+                    <span class="todo__task-icon todo__task-done"><i class="fa-solid fa-check"></i></span>
+                    <span class="todo__task-icon todo__task-undone">–</span>
+                  </label>
+                  <button class="todo__btn todo__task-delete" type="button">
+                    <span class="visually-hidden">Delete task</span>
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </li>
               </ul>
             </fieldset>
           </form>
