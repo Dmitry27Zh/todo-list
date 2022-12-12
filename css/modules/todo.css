@@ -83,6 +83,13 @@
   align-items: center;
   color: #111111;
   background: #ffffff;
+  transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+  transform-origin: 0 0;
+}
+
+.todo__task[data-action='delete'] {
+  transform: translateX(-10%) rotate(20deg);
+  opacity: 0;
 }
 
 .todo__task-title {

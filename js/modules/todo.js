@@ -9,11 +9,11 @@ const initTodo = () => {
     return
   }
 
-  initTaskList(taskElements, taskContainer)
-  initNewTaskAddition(tasks, form, taskElements, taskContainer)
+  initTaskList(tasks, taskElements, taskContainer)
+  initNewTaskAddition(tasks, taskElements, taskContainer, form)
 }
 
-const initTaskList = (taskElements, taskContainer) => {
+const initTaskList = (tasks, taskElements, taskContainer) => {
   taskContainer.addEventListener('click', (e) => {
     if (!e.target.matches('.todo__btn')) {
       return
@@ -23,18 +23,39 @@ const initTaskList = (taskElements, taskContainer) => {
     const taskElement = e.target.closest('.todo__task')
     const task = taskElements.get(taskElement)
 
-    if (task) {
-      task.done = !task.done
+    if (e.target.matches('.todo__task-status')) {
+      changeTaskStatus(task, e.target)
     }
 
-    if (e.target.matches('.todo__task-status')) {
-      const statusCheckbox = e.target.querySelector('.todo__task-status-input')
-      statusCheckbox.checked = task.done
+    if (e.target.matches('.todo__task-delete')) {
+      deleteTask(task, tasks, taskElement)
     }
   })
 }
 
-const initNewTaskAddition = (tasks, form, taskElements, taskContainer) => {
+const changeTaskStatus = (task, button) => {
+  task.done = !task.done
+  const statusCheckbox = button.querySelector('.todo__task-status-input')
+  statusCheckbox.checked = task.done
+}
+
+const deleteTask = (task, tasks, taskElement) => {
+  const index = tasks.indexOf(task)
+  tasks.splice(index, 1)
+  taskElement.dataset.action = 'delete'
+
+  taskElement.addEventListener(
+    'transitionend',
+    (e) => {
+      if (e.target === taskElement) {
+        taskElement.remove()
+      }
+    },
+    { once: true }
+  )
+}
+
+const initNewTaskAddition = (tasks, taskElements, taskContainer, form) => {
   const newTaskInput = form.querySelector('.todo__new-input')
 
   form.addEventListener('submit', (e) => {
