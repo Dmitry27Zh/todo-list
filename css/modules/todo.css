@@ -59,6 +59,10 @@
   background-color: #d88771;
 }
 
+.todo__btn * {
+  pointer-events: none;
+}
+
 .todo__form fieldset {
   margin: 0;
   padding: 0;
@@ -102,10 +106,10 @@
   opacity: 0;
 }
 
-.todo__task-input:checked ~ .todo__task-done {
+.todo__task-status-input:checked ~ .todo__task-done {
   opacity: 1;
 }
 
-.todo__task-input:checked ~ .todo__task-undone {
+.todo__task-status-input:checked ~ .todo__task-undone {
   opacity: 0;
 }
