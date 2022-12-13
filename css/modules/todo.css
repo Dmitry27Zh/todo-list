@@ -63,6 +63,10 @@
   pointer-events: none;
 }
 
+.todo__form[data-state='error'] {
+  pointer-events: none;
+}
+
 .todo__form fieldset {
   margin: 0;
   padding: 0;
