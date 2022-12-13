@@ -44,15 +44,14 @@ const deleteTask = (task, tasks, taskElement) => {
   tasks.splice(index, 1)
   taskElement.dataset.action = 'delete'
 
-  taskElement.addEventListener(
-    'transitionend',
-    (e) => {
-      if (e.target === taskElement) {
-        taskElement.remove()
-      }
-    },
-    { once: true }
-  )
+  const onTransitionend = (e) => {
+    if (e.target === taskElement) {
+      taskElement.remove()
+      taskElement.removeEventListener('transitionend', onTransitionend)
+    }
+  }
+
+  taskElement.addEventListener('transitionend', onTransitionend)
 }
 
 const initNewTaskAddition = (tasks, taskElements, taskContainer, form) => {
