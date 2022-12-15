@@ -8,6 +8,7 @@ const initTodo = () => {
   const taskContainer = form.querySelector('.todo__list')
   const newTaskInput = form.querySelector('.todo__new-input')
   const defaultPlaceholder = newTaskInput.placeholder
+  let lastNewTaskInputValue = ''
 
   if (!form) {
     return
@@ -55,6 +56,7 @@ const initTodo = () => {
     changeData(() => {
       tasks.push(task)
     }).then(() => {
+      newTaskInput.value = ''
       const taskMarkup = createTaskMarkup(task)
       taskContainer.insertAdjacentHTML('beforeend', taskMarkup)
       taskElements.set(taskContainer.lastElementChild, task)
@@ -95,7 +97,7 @@ const initTodo = () => {
       await storeData()
     } catch (e) {
       undoDataChange(data, savedData)
-      showState(Message.DATA_SAVE_ERROR)
+      showState(Message.DATA_SAVE_ERROR, true)
       return Promise.reject()
     }
   }
@@ -113,26 +115,31 @@ const initTodo = () => {
         reject()
       }
     }).finally(() => {
-      removeState()
+      removeState(true)
     })
   }
 
-  const showState = (message, autoRemove = true, state = 'error') => {
+  const showState = (message, returnLastValue, state = 'error', autoRemove = true) => {
+    lastNewTaskInputValue = newTaskInput.value
     newTaskInput.value = ''
     newTaskInput.placeholder = message
     newTaskInput.setAttribute('readonly', '')
     form.dataset.state = state
 
     if (autoRemove) {
-      setTimeout(() => removeState(), Timeout.MESSAGE_AUTOREMOVE)
+      setTimeout(() => removeState(returnLastValue), Timeout.MESSAGE_AUTOREMOVE)
     }
   }
 
-  const removeState = () => {
+  const removeState = (returnLastValue) => {
     newTaskInput.placeholder = defaultPlaceholder
     newTaskInput.removeAttribute('readonly')
     newTaskInput.focus()
     form.dataset.state = ''
+
+    if (returnLastValue) {
+      newTaskInput.value = lastNewTaskInputValue
+    }
   }
 }
 
