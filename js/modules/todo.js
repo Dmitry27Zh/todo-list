@@ -1,7 +1,8 @@
 import { copyObjectWithJSON, replaceAllObjectProperties } from '../utils/object.js'
 
 const initTodo = () => {
-  const data = { tasks: [] }
+  const localData = localStorage?.getItem('todo')
+  const data = localData ? JSON.parse(localData) : DEFAULT_DATA
   const tasks = data.tasks
   const taskElements = new Map()
   const form = document.querySelector('.todo__form')
@@ -14,7 +15,15 @@ const initTodo = () => {
     return
   }
 
+  const addTaskElement = (task) => {
+    const taskMarkup = createTaskMarkup(task)
+    taskContainer.insertAdjacentHTML('beforeend', taskMarkup)
+    taskElements.set(taskContainer.lastElementChild, task)
+  }
+
   const initTaskList = () => {
+    tasks.forEach(addTaskElement)
+
     taskContainer.addEventListener('click', (e) => {
       if (!e.target.matches('.todo__btn')) {
         return
@@ -57,9 +66,7 @@ const initTodo = () => {
       tasks.push(task)
     }).then(() => {
       newTaskInput.value = ''
-      const taskMarkup = createTaskMarkup(task)
-      taskContainer.insertAdjacentHTML('beforeend', taskMarkup)
-      taskElements.set(taskContainer.lastElementChild, task)
+      addTaskElement(task, taskContainer, taskElements)
     })
   }
 
@@ -142,6 +149,8 @@ const initTodo = () => {
     }
   }
 }
+
+const DEFAULT_DATA = { tasks: [] }
 
 const Message = {
   NEW_TASK_ERROR: 'Error! Non-valid task name',
