@@ -7,84 +7,143 @@ const initTodo = () => {
   const form = document.querySelector('.todo__form')
   const taskContainer = form.querySelector('.todo__list')
   const newTaskInput = form.querySelector('.todo__new-input')
+  const defaultPlaceholder = newTaskInput.placeholder
 
   if (!form) {
     return
   }
 
-  initTaskList(tasks, taskElements, taskContainer, form, data, newTaskInput)
-  initNewTaskAddition(tasks, taskElements, taskContainer, form, data, newTaskInput)
-}
+  const initTaskList = () => {
+    taskContainer.addEventListener('click', (e) => {
+      if (!e.target.matches('.todo__btn')) {
+        return
+      }
 
-const ErrorMessage = {
-  NEW_TASK: 'Error! Non-valid task name',
-  DATA_SAVE: 'Data save is now unavailable!',
-}
+      e.preventDefault()
+      const taskElement = e.target.closest('.todo__task')
+      const task = taskElements.get(taskElement)
 
-const initTaskList = (tasks, taskElements, taskContainer, form, data, newTaskInput) => {
-  taskContainer.addEventListener('click', (e) => {
-    if (!e.target.matches('.todo__btn')) {
-      return
-    }
+      if (e.target.matches('.todo__task-status')) {
+        changeTaskStatus(task, taskElement, e.target)
+      }
 
-    e.preventDefault()
-    const taskElement = e.target.closest('.todo__task')
-    const task = taskElements.get(taskElement)
+      if (e.target.matches('.todo__task-delete')) {
+        deleteTask(task, taskElement)
+      }
+    })
+  }
 
-    if (e.target.matches('.todo__task-status')) {
-      changeTaskStatus(task, e.target, data, newTaskInput, form)
-    }
+  const initNewTaskAddition = () => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const title = newTaskInput.value.trim()
 
-    if (e.target.matches('.todo__task-delete')) {
-      deleteTask(task, tasks, taskElement, data, newTaskInput, form)
-    }
-  })
-}
+      if (title) {
+        addNewTask(title)
+      } else {
+        showState(Message.NEW_TASK_ERROR)
+      }
+    })
+  }
 
-const changeTaskStatus = (task, button, data, newTaskInput, form) => {
-  const done = !task.done
+  initTaskList()
+  initNewTaskAddition()
 
-  changeData(data, () => (task.done = done), newTaskInput, form).then(() => {
-    const statusCheckbox = button.querySelector('.todo__task-status-input')
-    statusCheckbox.checked = done
-  })
-}
+  const addNewTask = (title) => {
+    const task = { title, done: false }
 
-const deleteTask = (task, tasks, taskElement, data, newTaskInput, form) => {
-  changeData(
-    data,
-    () => {
+    changeData(() => {
+      tasks.push(task)
+    }).then(() => {
+      const taskMarkup = createTaskMarkup(task)
+      taskContainer.insertAdjacentHTML('beforeend', taskMarkup)
+      taskElements.set(taskContainer.lastElementChild, task)
+    })
+  }
+
+  const changeTaskStatus = (task, taskElement, button) => {
+    const done = !task.done
+
+    changeData(() => (task.done = done)).then(() => {
+      const statusCheckbox = button.querySelector('.todo__task-status-input')
+      statusCheckbox.checked = done
+    })
+  }
+
+  const deleteTask = (task, taskElement) => {
+    changeData(() => {
       const index = tasks.indexOf(task)
       tasks.splice(index, 1)
-    },
-    newTaskInput,
-    form
-  ).then(() => {
-    taskElement.dataset.action = 'delete'
-    taskElement.addEventListener('transitionend', onTransitionend)
-  })
+    }).then(() => {
+      taskElement.dataset.action = 'delete'
+      taskElement.addEventListener('transitionend', onTransitionend)
+    })
 
-  const onTransitionend = (e) => {
-    if (e.target === taskElement) {
-      taskElement.remove()
-      taskElement.removeEventListener('transitionend', onTransitionend)
+    const onTransitionend = (e) => {
+      if (e.target === taskElement) {
+        taskElement.remove()
+        taskElement.removeEventListener('transitionend', onTransitionend)
+      }
     }
+  }
+
+  const changeData = async (cb) => {
+    const savedData = copyObjectWithJSON(data)
+    cb(data)
+
+    try {
+      await storeData()
+    } catch (e) {
+      undoDataChange(data, savedData)
+      showState(Message.DATA_SAVE_ERROR)
+      return Promise.reject()
+    }
+  }
+
+  const storeData = () => {
+    showState(Message.LOADING, false, 'loading')
+
+    return new Promise((resolve, reject) => {
+      const localData = JSON.stringify(data)
+
+      if (localStorage) {
+        localStorage.setItem('todo', localData)
+        resolve()
+      } else {
+        reject()
+      }
+    }).finally(() => {
+      removeState()
+    })
+  }
+
+  const showState = (message, autoRemove = true, state = 'error') => {
+    newTaskInput.value = ''
+    newTaskInput.placeholder = message
+    newTaskInput.setAttribute('readonly', '')
+    form.dataset.state = state
+
+    if (autoRemove) {
+      setTimeout(() => removeState(), Timeout.MESSAGE_AUTOREMOVE)
+    }
+  }
+
+  const removeState = () => {
+    newTaskInput.placeholder = defaultPlaceholder
+    newTaskInput.removeAttribute('readonly')
+    newTaskInput.focus()
+    form.dataset.state = ''
   }
 }
 
-const initNewTaskAddition = (tasks, taskElements, taskContainer, form, data, newTaskInput) => {
-  form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    const title = newTaskInput.value.trim()
+const Message = {
+  NEW_TASK_ERROR: 'Error! Non-valid task name',
+  DATA_SAVE_ERROR: 'Data save is now unavailable!',
+  LOADING: 'Loading...',
+}
 
-    if (title) {
-      addNewTask(tasks, taskContainer, title, taskElements, data, newTaskInput, form)
-      newTaskInput.value = ''
-      newTaskInput.focus()
-    } else {
-      showErrorMessage(newTaskInput, ErrorMessage.NEW_TASK, form)
-    }
-  })
+const Timeout = {
+  MESSAGE_AUTOREMOVE: 2000,
 }
 
 const createTaskMarkup = (task) => {
@@ -109,67 +168,5 @@ const createTaskMarkup = (task) => {
   `
 }
 
-const showErrorMessage = (newTaskInput, errorMessage, form) => {
-  const defaultPlaceholder = newTaskInput.placeholder
-  newTaskInput.value = ''
-  newTaskInput.placeholder = errorMessage
-  newTaskInput.setAttribute('readonly', '')
-  form.dataset.state = 'error'
-
-  setTimeout(() => {
-    newTaskInput.placeholder = defaultPlaceholder
-    newTaskInput.removeAttribute('readonly')
-    newTaskInput.focus()
-    form.dataset.state = ''
-  }, 2000)
-}
-
-const addNewTask = (tasks, container, title, taskElements, data, newTaskInput, form) => {
-  const task = { title, done: false }
-
-  changeData(
-    data,
-    () => {
-      tasks.push(task)
-    },
-    newTaskInput,
-    form
-  ).then(() => {
-    const taskMarkup = createTaskMarkup(task)
-    container.insertAdjacentHTML('beforeend', taskMarkup)
-    taskElements.set(container.lastElementChild, task)
-  })
-}
-
-const changeData = async (data, cb, newTaskInput, form) => {
-  const savedData = copyObjectWithJSON(data)
-  cb(data)
-
-  try {
-    await storeData(data)
-  } catch (e) {
-    replaceAllObjectProperties(data, savedData)
-    showErrorMessage(newTaskInput, ErrorMessage.DATA_SAVE, form)
-    return Promise.reject()
-  }
-}
-
-const storeData = (data) => {
-  return new Promise((resolve, reject) => {
-    const localData = JSON.stringify(data)
-
-    if (localStorage) {
-      localStorage.setItem('todo', localData)
-
-      if (crush) {
-        throw new Error()
-      }
-
-      resolve()
-    } else {
-      reject()
-    }
-  })
-}
-
+const undoDataChange = (data, savedData) => replaceAllObjectProperties(data, savedData)
 initTodo()

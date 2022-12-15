@@ -53,18 +53,17 @@
   transition: color 0.3s ease, background 0.3s ease;
 }
 
-.todo__btn:hover,
-.todo__btn:focus-visible {
-  color: #ffffff;
-  background-color: #d88771;
-}
-
 .todo__btn * {
   pointer-events: none;
 }
 
-.todo__form[data-state='error'] {
+.todo__form[data-state='error'],
+.todo__form[data-state='loading'] {
   pointer-events: none;
+}
+
+.todo__form[data-state='loading'] .todo__new {
+  animation: loading 1s linear infinite forwards;
 }
 
 .todo__form fieldset {
@@ -123,4 +122,15 @@
 
 .todo__task-status-input:checked ~ .todo__task-undone {
   opacity: 0;
+}
+
+@keyframes loading {
+  0%,
+  100% {
+    background: #ffffff;
+  }
+
+  50% {
+    background: #eeeeee;
+  }
 }
